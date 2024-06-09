@@ -4,6 +4,11 @@ using MultivariateStats, Statistics, LinearAlgebra, Random, StatsBase
 
 export PCR_predict, tune_num_components, PCR_logistic_predict, tune_num_components_logistic
 
+# Softplus (SmoothReLU function)
+function Softplus(a)
+    return log(1+exp(a))
+end    
+
 # prediction via PCR
 function PCR_predict(X_train, y_train, X_test, num_components)
     M = fit(PCA, X_train'; maxoutdim=num_components)
@@ -11,7 +16,7 @@ function PCR_predict(X_train, y_train, X_test, num_components)
     X_test_reduced = transform(M, X_test')
     β = X_train_reduced' \ y_train
     y_pred = X_test_reduced' * β
-    return y_pred
+    return  Softplus.(y_pred)
 end
 
 # prediction via PCR for logistic regression
